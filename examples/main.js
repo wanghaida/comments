@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import Comments from '../src';
 import App from './App.vue';
 
-new Comments({
+const comments = new Comments({
     // API（和 ID 二选一，优先于 ID）
     api: '',
     // ID（和 API 二选一）
@@ -15,5 +15,6 @@ new Comments({
     // 颜色
     pointColor: ['#f00', '#0f0', '#00f', 'rgba(255,255,255,0.5)'],
 });
+console.log(comments);
 
 createApp(App).mount('#app');

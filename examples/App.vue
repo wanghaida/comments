@@ -10,8 +10,6 @@ export default {
 
 <style>
 #app {
-    min-height: 300vh;
-    margin-top: 60px;
     color: #2c3e50;
     text-align: center;
 }

@@ -7,6 +7,7 @@ class Comments {
 
         this.app = null;
         this.dom = null;
+        this.root = null;
 
         this.create();
     }
@@ -19,8 +20,8 @@ class Comments {
         document.body.appendChild(this.dom);
 
         // 创建实例
-        this.app = createApp(Wrap);
-        this.app.mount(this.dom);
+        this.app = createApp({ extends: Wrap, data: () => this.opts });
+        this.root = this.app.mount(this.dom);
     }
 }
 
