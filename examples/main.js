@@ -11,9 +11,9 @@ const comments = new Comments({
     // 原点（left/center，默认 center）
     origin: 'center',
     // 尺寸（large/default/small，默认 default）
-    pointSize: 'large',
+    // pointSize: 'large',
     // 颜色
-    pointColor: ['#f00', '#0f0', '#00f', 'rgba(255,255,255,0.5)'],
+    // pointColor: ['#1890ff'],
 });
 console.log(comments);
 

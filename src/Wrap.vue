@@ -1,6 +1,14 @@
 <template>
     <div class="comments-wrap">
-        <Point v-for="(val, key) in points" :key="key" :point="val.point" />
+        <Point
+            v-for="(val, key) in points"
+            :key="key"
+            :point="val.point"
+            :pointSize="pointSize"
+            :pointColor="val.color"
+            @mouseenter="mouseenter"
+            @mouseleave="mouseleave"
+        />
     </div>
 </template>
 
@@ -17,6 +25,7 @@ export default {
             // LeanCloud
             appId: '',
             appKey: '',
+            appUrl: '',
             // 坐标点原点
             origin: 'center',
             // 坐标点尺寸
@@ -35,15 +44,60 @@ export default {
     methods: {
         // 初始化
         init() {
-            console.log('init', AV);
-            for (let i = 0; i < 100; i++) {
-                const x = 1920 * Math.random() << 0;
-                const y = 3000 * Math.random() << 0;
+            AV.init({
+                appId: this.appId,
+                appKey: this.appKey,
+                serverURL: this.appUrl ? this.appUrl : `https://${this.appId.substr(0, 8)}.lc-cn-n1-shared.com`,
+            });
 
+            // 生成坐标点
+            const query = new AV.Query('Comments');
+
+            query.equalTo('type', 'point');
+            query.equalTo('path', window.location.pathname);
+
+            query.find().then((points) => {
+                for (let i = 0; i < points.length; i++) {
+                    // 计算坐标点位置
+                    const point = points[i].get('points').split(',').map(parseFloat);
+
+                    if (points[i].get('origin') === 'center') {
+                        point[0] += window.innerWidth / 2;
+                    }
+
+                    this.points.push({
+                        color: this.pointColor,
+                        point,
+                    });
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+
+            for (let i = 0; i < 100; i++) {
                 this.points.push({
-                    point: [x, y],
+                    color: this.pointColor,
+                    point: [1920 * Math.random() << 0, 3000 * Math.random() << 0],
                 });
             }
+
+            // 监听双击事件
+            this.listen();
+        },
+        // 监听双击事件
+        listen() {
+            document.addEventListener('dblclick', (e) => {
+                this.points.push({
+                    color: this.pointColor,
+                    point: [e.pageX, e.pageY],
+                });
+            });
+        },
+        mouseenter() {
+            console.log('enter');
+        },
+        mouseleave() {
+            console.log('leave');
         },
     },
 };

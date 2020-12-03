@@ -1,24 +1,55 @@
 <template>
-    <div class="comments-point animation" :style="style" @mouseenter="mouseenter" @mouseleave="mouseleave" />
+    <div class="comments-point animation" :class="pointSize" :style="style" />
 </template>
 
 <script>
 export default {
-    props: ['point'],
+    props: ['point', 'pointSize', 'pointColor'],
+    data() {
+        return {
+            theme: ['red', 'volcano', 'orange', 'gold', 'yellow', 'lime', 'green', 'cyan', 'blue', 'geekblue', 'purple', 'magenta'],
+            themeArr: [
+                ['#ff7875', '#ff4d4f', '#f5222d', '#cf1322'],
+                ['#ff9c6e', '#ff7a45', '#fa541c', '#d4380d'],
+                ['#ffc069', '#ffa940', '#fa8c16', '#d46b08'],
+                ['#ffd666', '#ffc53d', '#faad14', '#d48806'],
+                ['#fff566', '#ffec3d', '#fadb14', '#d4b106'],
+                ['#d3f261', '#bae637', '#a0d911', '#7cb305'],
+                ['#95de64', '#73d13d', '#52c41a', '#389e0d'],
+                ['#5cdbd3', '#36cfc9', '#13c2c2', '#08979c'],
+                ['#69c0ff', '#40a9ff', '#1890ff', '#096dd9'],
+                ['#85a5ff', '#597ef7', '#2f54eb', '#1d39c4'],
+                ['#b37feb', '#9254de', '#722ed1', '#531dab'],
+                ['#ff85c0', '#f759ab', '#eb2f96', '#c41d7f'],
+            ],
+        };
+    },
     computed: {
         style() {
-            return {
+            const style = {
                 top: `${this.point[1]}px`,
                 left: `${this.point[0]}px`,
             };
+
+            let color = '#1890ff';
+
+            if (Array.isArray(this.pointColor)) {
+                color = this.random(this.pointColor);
+            } else if (this.pointColor === 'random' || this.theme.indexOf(this.pointColor) === -1) {
+                color = this.random(this.themeArr)[2];
+            } else {
+                color = this.random(this.themeArr[this.theme.indexOf(this.pointColor)]);
+            }
+
+            style.background = color;
+            style.borderColor = color;
+
+            return style;
         },
     },
     methods: {
-        mouseenter() {
-            console.log('enter');
-        },
-        mouseleave() {
-            console.log('leave');
+        random(array) {
+            return Array.isArray(array) ? array[array.length * Math.random() << 0] : [];
         },
     },
 };
@@ -27,17 +58,21 @@ export default {
 <style scoped>
 .comments-point {
     position: absolute;
-    top: 100px;
-    left: 50%;
     width: 8px;
     height: 8px;
-    background: #1890ff;
-    border-color: #1890ff;
     box-sizing: border-box;
     border-radius: 50%;
     transform: translate(-50%);
     box-sizing: border-box;
     cursor: pointer;
+}
+.comments-point.large {
+    width: 10px;
+    height: 10px;
+}
+.comments-point.small {
+    width: 6px;
+    height: 6px;
 }
 
 .comments-point::before,
