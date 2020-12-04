@@ -10,7 +10,7 @@
 | appUrl | string | - | - | LeanCloud 绑定域名 |
 | origin | string | left/center | center | 坐标点原点，`left: [0, 0]` `center: [window.innerWidth / 2, 0]` |
 | pointSize | string | large/default/small | default | 坐标点尺寸 |
-| pointColor | string/array | random/red/volcano/orange/gold/yellow/lime/green/cyan/blue/geekblue/purple/magenta | random | 坐标点颜色 |
+| pointColor | string/array | random<br />red/volcano/orange<br />gold/yellow/lime<br />green/cyan/blue<br />geekblue/purple/magenta | random | 坐标点颜色 |
 | zIndex | number | - | 999 | 坐标点层级 |
 | delay | number | - | 0.1 | 评论框关闭延时，单位：秒 |
 

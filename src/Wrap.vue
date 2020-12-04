@@ -18,6 +18,8 @@
             :pointColor="val.color"
             @mouseenter="mouseenter"
             @mouseleave="mouseleave"
+            @click.stop
+            @dblclick.stop
         />
     </div>
 </template>
