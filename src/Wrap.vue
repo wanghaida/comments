@@ -3,6 +3,7 @@
         <Comment
             v-show="commentShow"
             ref="comment"
+            :id="commentId"
             :style="commentStyle"
             :pointColor="commentColor"
             @mouseenter="mouseenterComment"
@@ -10,6 +11,7 @@
         />
         <Point
             v-for="(val, key) in points"
+            :data-id="val.id"
             :key="key"
             :point="val.point"
             :pointSize="pointSize"
@@ -49,6 +51,7 @@ export default {
             // 坐标点数组
             points: [],
             // 评论框数据
+            commentId: 0,
             commentShow: false,
             commentColor: '',
             commentStyle: {},
@@ -84,6 +87,7 @@ export default {
                     }
 
                     this.points.push({
+                        id: points[i].id,
                         color: this.pointColor,
                         point,
                     });
@@ -92,22 +96,39 @@ export default {
                 console.error(error);
             });
 
-            for (let i = 0; i < 100; i++) {
-                this.points.push({
-                    color: this.pointColor,
-                    point: [1920 * Math.random() << 0, 3000 * Math.random() << 0],
-                });
-            }
-
             // 监听双击事件
             this.listen();
         },
         // 监听双击事件
         listen() {
             document.addEventListener('dblclick', (e) => {
-                this.points.push({
+                const point = {
+                    id: 0,
                     color: this.pointColor,
                     point: [e.pageX, e.pageY],
+                };
+
+                // 存储坐标点
+                const comments = new AV.Object('Comments');
+
+                comments.set('type', 'point');
+                comments.set('path', window.location.pathname);
+                comments.set('origin', this.origin);
+
+                let x = e.pageX;
+                if (this.origin === 'center') {
+                    x -= window.innerWidth / 2;
+                }
+
+                comments.set('points', `${x},${e.pageY}`);
+                comments.set('ua', window.navigator.userAgent);
+                comments.set('screen', `${window.screen.width},${window.screen.height}`);
+
+                comments.save().then((comment) => {
+                    point.id = comment.id;
+                    this.points.push(point);
+                }).catch((error) => {
+                    console.error(error);
                 });
             });
         },
@@ -128,7 +149,8 @@ export default {
             const width = parseFloat(style.width, 10);
             const height = parseFloat(style.height, 10);
 
-            // 颜色设置
+            // 参数设置
+            this.commentId = point.dataset.id;
             this.commentColor = getComputedStyle(point).backgroundColor;
             // 位置判定
             if ((left + width) < (w - 20) && (top + height) < h) {

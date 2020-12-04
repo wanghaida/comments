@@ -1,44 +1,69 @@
 <template>
     <div class="comments-comment" :style="box">
-        <ul class="comments">
-            <li v-for="n in 5" :key="n">
+        <ul class="comments" v-show="comments.length">
+            <li v-for="(val, key) in comments" :key="key">
                 <div class="comment">
                     <div class="comment-author">
                         <span class="avatar">
                             <img src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="">
                         </span>
-                        <span class="name" title="这是一个很长的昵称">
-                            这是一个很长的昵称
+                        <span class="name" :title="val.name">
+                            {{ val.name }}
                         </span>
-                        <span class="time" title="2020-12-04 11:27:04">
-                            1年前
+                        <span class="time" :title="val.createdAt">
+                            {{ time(val.createdAt) }}
                         </span>
                     </div>
                     <div class="comment-detail">
-                        <p>评论组件可用于对事物的讨论，例如页面、博客文章、问题等等。</p>
+                        <p>{{ val.comment }}</p>
                     </div>
                 </div>
             </li>
         </ul>
+        <div class="comments-nodata" v-show="!comments.length">
+            <img src="./empty.png" />
+            暂无数据
+        </div>
         <div class="comments-new" :style="borderColor">
             <div class="new-header">
-                <input type="text" name="name" placeholder="昵称">
-                <input type="email" name="email" placeholder="邮箱">
+                <input v-model="name" type="text" placeholder="昵称" autocomplete="off">
+                <input v-model="email" type="email" placeholder="邮箱" autocomplete="off">
             </div>
             <div class="new-editer" :style="borderColor">
-                <textarea name="comment" placeholder="还不来评论一下？😏"></textarea>
+                <textarea v-model="comment" name="comment" placeholder="还不来评论一下？😘"></textarea>
             </div>
             <div class="new-footer" :style="borderColor">
-                <button type="button" :style="color">评论</button>
+                <div class="tips" v-html="tips"></div>
+                <button class="submit" :style="color" @click="save">评论</button>
             </div>
         </div>
     </div>
 </template>
 
 <script>
+import AV from 'leancloud-storage';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import 'dayjs/locale/zh-cn';
+
+dayjs.extend(relativeTime);
+dayjs.locale('zh-cn');
+
 export default {
-    props: ['pointColor'],
+    props: ['id', 'pointColor'],
+    data() {
+        return {
+            tips: '',
+            name: '',
+            email: '',
+            comment: '',
+            comments: [],
+        };
+    },
     computed: {
+        time() {
+            return (time) => dayjs().from((time));
+        },
         rgba() {
             return this.pointColor.replace(/rgb\((.+)\)/, 'rgba($1, .65)');
         },
@@ -62,6 +87,70 @@ export default {
             return {
                 boxShadow: `0 1px 2px -2px rgba(${color}, .16), 0 3px 6px 0 rgba(${color}, .12), 0 5px 12px 4px rgba(${color}, .09)`,
             };
+        },
+    },
+    watch: {
+        id: 'init',
+    },
+    methods: {
+        init() {
+            this.tips = '';
+            this.comments = [];
+
+            // 生成评论数据
+            const query = new AV.Query('Comments');
+
+            query.equalTo('type', 'comment');
+            query.equalTo('parent_id', this.id);
+            query.descending('createdAt')
+
+            query.find().then((comments) => {
+                for (let i = 0; i < comments.length; i++) {
+                    this.comments.push({
+                        name: comments[i].get('name'),
+                        email: comments[i].get('email'),
+                        comment: comments[i].get('comment'),
+                        createdAt: dayjs(comments[i].createdAt).format('YYYY-MM-DD HH:mm:ss'),
+                    });
+                }
+            }).catch((error) => {
+                console.error(error);
+            });
+        },
+        save() {
+            if (this.id === 0) return;
+            if (!this.name || !this.comment) return this.message('昵称和评论必填哦😋');
+
+            // 保存评论数据
+            const comments = new AV.Object('Comments');
+
+            comments.set('type', 'comment');
+            comments.set('parent_id', this.id);
+            comments.set('name', this.name);
+            comments.set('email', this.email);
+            comments.set('comment', this.comment);
+            comments.set('ua', window.navigator.userAgent);
+            comments.set('screen', `${window.screen.width},${window.screen.height}`);
+
+            comments.save().then((comment) => {
+                this.message('评论成功', comment);
+                this.comment = '';
+                this.comments.unshift({
+                    name: comment.get('name'),
+                    email: comment.get('email'),
+                    comment: comment.get('comment'),
+                    createdAt: dayjs(comment.createdAt).format('YYYY-MM-DD HH:mm:ss'),
+                });
+            }).catch((error) => {
+                this.message('评论失败');
+                console.error(error);
+            });
+        },
+        message(tips = '') {
+            this.tips = tips;
+            setTimeout(() => {
+                this.tips = '';
+            }, 2000);
         },
     },
 };
@@ -95,11 +184,21 @@ li {
     border-radius: 4px;
     box-shadow: 0 1px 2px -2px rgba(0, 0, 0, .16), 0 3px 6px 0 rgba(0, 0, 0, .12), 0 5px 12px 4px rgba(0, 0, 0, .09);
     box-sizing: border-box;
+    user-select: text;
 }
 
 .comments-comment .comments {
     height: 244px;
     overflow: overlay;
+}
+.comments-comment .comments-nodata {
+    height: 234px;
+    color: rgba(0, 0, 0, .85);
+    text-align: center;
+}
+.comments-comment .comments-nodata img {
+    display: block;
+    margin: 10px auto;
 }
 
 .comments-comment .comments-new {
@@ -185,14 +284,20 @@ li {
 
 .new-footer {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     border-top: 1px dashed #1890ff;
 }
-.new-footer button {
+.new-footer .tips,
+.new-footer .submit {
     padding: 4px;
     color: #1890ff;
     font-size: 12px;
     line-height: 20px;
+}
+.new-footer .tips {
+    color: #ff7875;
+}
+.new-footer .submit {
     background: transparent;
     border: none;
     cursor: pointer;

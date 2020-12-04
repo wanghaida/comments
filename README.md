@@ -26,7 +26,7 @@
 |:---|:---|:---|:---|:---|:---|
 | id | varchar | 255 | 是 | 主键、唯一 |  |
 | type | varchar | 255 | 是 |  | 类型，`point` `comment` |
-| path | varchar | 1000 | 是 |  | 网页路径 |
+| path | varchar | 1000 |  |  | 网页路径 |
 | origin | varchar | 255 |  |  | 坐标点原点 |
 | points | varchar | 255 |  |  | 坐标点，英文逗号分隔 |
 | parent_id | varchar | 255 |  |  | 父 ID |
