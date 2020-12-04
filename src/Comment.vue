@@ -54,8 +54,8 @@ export default {
     data() {
         return {
             tips: '',
-            name: '',
-            email: '',
+            name: localStorage.getItem('uquuu_comments_name') || '',
+            email: localStorage.getItem('uquuu_comments_email') || '',
             comment: '',
             comments: [],
         };
@@ -118,6 +118,10 @@ export default {
             });
         },
         save() {
+            // 保存用户信息
+            localStorage.setItem('uquuu_comments_name', this.name);
+            localStorage.setItem('uquuu_comments_email', this.email);
+
             if (this.id === 0) return;
             if (!this.name || !this.comment) return this.message('昵称和评论必填哦😋');
 
