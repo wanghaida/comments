@@ -1,5 +1,5 @@
 <template>
-    <div class="comments-point animation" :class="pointSize" :style="style" />
+    <div class="comments-point" :class="pointSize" :style="style" />
 </template>
 
 <script>
@@ -90,11 +90,10 @@ export default {
     content: '';
     pointer-events: none;
 }
-
-.comments-point.animation::before {
+.comments-point::before {
     animation: point 2s ease-out infinite;
 }
-.comments-point.animation::after {
+.comments-point::after {
     animation: point 2s 1s ease-out infinite;
 }
 
