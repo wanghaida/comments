@@ -1,20 +1,23 @@
 import { createApp } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
 import Comments from '../src';
 import App from './App.vue';
 
-const comments = new Comments({
-    // API（和 ID 二选一，优先于 ID）
-    api: '',
-    // ID（和 API 二选一）
-    appId: '',
-    appKey: '',
-    // 原点（left/center，默认 center）
-    origin: 'center',
-    // 尺寸（large/default/small，默认 default）
-    // pointSize: 'large',
-    // 颜色
-    // pointColor: ['#1890ff'],
+const router = createRouter({
+    history: createWebHistory(),
+    routes: [
+        { path: '/', component: () => import('./views/Index.vue') },
+        { path: '/a', component: () => import('./views/A.vue') },
+        { path: '/b', component: () => import('./views/B.vue') },
+        { path: '/match', component: () => import('./views/Match.vue') },
+    ],
 });
-console.log(comments);
 
-createApp(App).mount('#app');
+router.afterEach(() => {
+    new Comments({
+        appId: '',
+        appKey: '',
+    });
+});
+
+createApp(App).use(router).mount('#app');

@@ -30,6 +30,7 @@
 </template>
 
 <script>
+import AV from 'leancloud-storage';
 import Comment from './Comment.vue';
 import Point from './Point.vue';
 
@@ -66,20 +67,6 @@ export default {
             commentStyle: {},
         };
     },
-    computed: {
-        pointPath() {
-            let path = this.path;
-
-            if (this.path.includes('location.path')) {
-                path = window.location.pathname;
-            }
-            if (this.path.includes('location.href')) {
-                path = window.location.href;
-            }
-
-            return path;
-        },
-    },
     mounted() {
         if (this.api !== '' || this.appId !== '' && this.appKey !== '') this.init();
     },
@@ -107,7 +94,7 @@ export default {
             const query = new AV.Query('Comments');
 
             query.equalTo('type', 'point');
-            query.equalTo('path', this.pointPath);
+            query.equalTo('path', this.pointPath());
 
             query.find().then((points) => {
                 for (let i = 0; i < points.length; i++) {
@@ -223,6 +210,19 @@ export default {
             if (this.points[index]) {
                 this.points[index].id = payload.id;
             }
+        },
+        // 网址路径
+        pointPath() {
+            let path = this.path;
+
+            if (this.path.includes('location.path')) {
+                path = window.location.pathname;
+            }
+            if (this.path.includes('location.href')) {
+                path = window.location.href;
+            }
+
+            return path;
         },
     },
 };

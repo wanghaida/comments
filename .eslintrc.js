@@ -7,9 +7,6 @@ module.exports = {
         'plugin:vue/vue3-essential',
         'eslint:recommended',
     ],
-    globals: {
-        AV: false,
-    },
     parserOptions: {
         parser: 'babel-eslint',
     },

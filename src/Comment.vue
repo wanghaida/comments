@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import AV from 'leancloud-storage';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
@@ -138,7 +139,7 @@ export default {
                 const comments = new AV.Object('Comments');
 
                 comments.set('type', 'point');
-                comments.set('path', this.path);
+                comments.set('path', this.path());
                 comments.set('origin', this.origin);
 
                 let [x, y] = this.point.point;

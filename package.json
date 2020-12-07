@@ -9,16 +9,15 @@
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --modern --target lib --name comments ./src/index.js",
-    "build-vue": "vue-cli-service build --inline-vue --modern --no-clean --target lib --name comments-vue ./src/index.js",
+    "build": "vue-cli-service build --target lib --name comments ./src/index.js",
+    "build-vue": "vue-cli-service build --inline-vue --no-clean --target lib --name comments-vue ./src/index.js",
     "lint": "vue-cli-service lint",
     "pub": "npm run build && npm run build-vue && npm publish --access public"
   },
   "dependencies": {
     "core-js": "^3.6.5",
     "dayjs": "^1.9.6",
-    "vue": "^3.0.0",
-    "vue-demi": "^0.4.5"
+    "leancloud-storage": "^4.8.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -27,7 +26,10 @@
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^6.7.2",
-    "eslint-plugin-vue": "^7.0.0-0"
+    "eslint-plugin-vue": "^7.0.0-0",
+    "vue": "^3.0.0",
+    "vue-demi": "^0.4.5",
+    "vue-router": "^4.0.0-0"
   },
   "repository": {
     "type": "git",
