@@ -3,15 +3,20 @@
         <Comment
             v-show="commentShow"
             ref="comment"
-            :id="commentId"
+            :path="pointPath"
+            :origin="origin"
             :style="commentStyle"
-            :pointColor="commentColor"
+            :points="points"
+            :pointsIndex="pointsIndex"
             @mouseenter="mouseenterComment"
             @mouseleave="mouseleaveComment"
+            @click.stop
+            @dblclick.stop
+            @change="changePoint"
         />
         <Point
             v-for="(val, key) in points"
-            :data-id="val.id"
+            :data-index="key"
             :key="key"
             :point="val.point"
             :pointSize="pointSize"
@@ -25,7 +30,6 @@
 </template>
 
 <script>
-import AV from 'leancloud-storage';
 import Comment from './Comment.vue';
 import Point from './Point.vue';
 
@@ -39,6 +43,8 @@ export default {
             appId: '',
             appKey: '',
             appUrl: '',
+            // 网址路径
+            path: 'window.location.pathname',
             // 坐标点原点
             origin: 'center',
             // 坐标点尺寸
@@ -49,15 +55,30 @@ export default {
             zIndex: 999,
             // 评论框关闭延时，单位：秒
             delay: 0.1,
-            timer: null,
+            delayTimer: null,
             // 坐标点数组
             points: [],
+            pointsIndex: -1,
             // 评论框数据
             commentId: 0,
             commentShow: false,
             commentColor: '',
             commentStyle: {},
         };
+    },
+    computed: {
+        pointPath() {
+            let path = this.path;
+
+            if (this.path.includes('location.path')) {
+                path = window.location.pathname;
+            }
+            if (this.path.includes('location.href')) {
+                path = window.location.href;
+            }
+
+            return path;
+        },
     },
     mounted() {
         if (this.api !== '' || this.appId !== '' && this.appKey !== '') this.init();
@@ -73,11 +94,20 @@ export default {
                 serverURL: this.appUrl ? this.appUrl : `https://${this.appId.substr(0, 8)}.lc-cn-n1-shared.com`,
             });
 
-            // 生成坐标点
+            // 查询坐标点
+            this.query();
+
+            // 监听双击事件
+            this.listen();
+        },
+        // 查询坐标点
+        query() {
+            this.points = [];
+
             const query = new AV.Query('Comments');
 
             query.equalTo('type', 'point');
-            query.equalTo('path', window.location.pathname);
+            query.equalTo('path', this.pointPath);
 
             query.find().then((points) => {
                 for (let i = 0; i < points.length; i++) {
@@ -97,9 +127,6 @@ export default {
             }).catch((error) => {
                 console.error(error);
             });
-
-            // 监听双击事件
-            this.listen();
         },
         // 监听双击事件
         listen() {
@@ -109,29 +136,7 @@ export default {
                     color: this.pointColor,
                     point: [e.pageX, e.pageY],
                 };
-
-                // 存储坐标点
-                const comments = new AV.Object('Comments');
-
-                comments.set('type', 'point');
-                comments.set('path', window.location.pathname);
-                comments.set('origin', this.origin);
-
-                let x = e.pageX;
-                if (this.origin === 'center') {
-                    x -= window.innerWidth / 2;
-                }
-
-                comments.set('points', `${x},${e.pageY}`);
-                comments.set('ua', window.navigator.userAgent);
-                comments.set('screen', `${window.screen.width},${window.screen.height}`);
-
-                comments.save().then((comment) => {
-                    point.id = comment.id;
-                    this.points.push(point);
-                }).catch((error) => {
-                    console.error(error);
-                });
+                this.points.push(point);
             });
         },
         // 移入坐标点
@@ -152,8 +157,7 @@ export default {
             const height = parseFloat(style.height, 10);
 
             // 参数设置
-            this.commentId = point.dataset.id;
-            this.commentColor = getComputedStyle(point).backgroundColor;
+            this.pointsIndex = point.dataset.index;
             // 位置判定
             if ((left + width) < (w - 20) && (top + height) < h) {
                 // 判定右下
@@ -201,18 +205,24 @@ export default {
         },
         // 移出坐标点
         mouseleave() {
-            clearTimeout(this.timer);
-            this.timer = setTimeout(() => {
+            clearTimeout(this.delayTimer);
+            this.delayTimer = setTimeout(() => {
                 this.commentShow = false;
             }, this.delay < 0.1 ? 100 : this.delay * 1000);
         },
         // 移入评论框
         mouseenterComment() {
-            clearTimeout(this.timer);
+            clearTimeout(this.delayTimer);
         },
         // 移出评论框
         mouseleaveComment() {
             this.mouseleave();
+        },
+        // 修改坐标点
+        changePoint(index, payload) {
+            if (this.points[index]) {
+                this.points[index].id = payload.id;
+            }
         },
     },
 };

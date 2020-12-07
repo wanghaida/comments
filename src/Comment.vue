@@ -21,7 +21,7 @@
             </li>
         </ul>
         <div class="comments-nodata" v-show="!comments.length">
-            <img src="./empty.png" />
+            <img src="./assets/empty.png" />
             暂无数据
         </div>
         <div class="comments-new" :style="borderColor">
@@ -41,7 +41,6 @@
 </template>
 
 <script>
-import AV from 'leancloud-storage';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
@@ -50,7 +49,7 @@ dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
 export default {
-    props: ['id', 'pointColor'],
+    props: ['path', 'origin', 'points', 'pointsIndex'],
     data() {
         return {
             tips: '',
@@ -61,11 +60,18 @@ export default {
         };
     },
     computed: {
+        point() {
+            return this.points[this.pointsIndex] || {
+                id: 0,
+                color: '',
+                point: [0, 0],
+            };
+        },
         time() {
             return (time) => dayjs().from((time));
         },
         rgba() {
-            return this.pointColor.replace(/rgb\((.+)\)/, 'rgba($1, .65)');
+            return this.point.color.replace(/rgb\((.+)\)/, 'rgba($1, .65)');
         },
         backgroundColor() {
             return {
@@ -83,25 +89,28 @@ export default {
             };
         },
         box() {
-            const color = this.pointColor.replace(/rgb\((.+)\)/, '$1');
+            const color = this.point.color.replace(/rgb\((.+)\)/, '$1');
             return {
                 boxShadow: `0 1px 2px -2px rgba(${color}, .16), 0 3px 6px 0 rgba(${color}, .12), 0 5px 12px 4px rgba(${color}, .09)`,
             };
         },
     },
     watch: {
-        id: 'init',
+        pointsIndex: 'init',
     },
     methods: {
         init() {
             this.tips = '';
             this.comments = [];
 
+            // 新增坐标点
+            if (this.point.id === 0) return;
+
             // 生成评论数据
             const query = new AV.Query('Comments');
 
             query.equalTo('type', 'comment');
-            query.equalTo('parent_id', this.id);
+            query.equalTo('parent_id', this.point.id);
             query.descending('createdAt')
 
             query.find().then((comments) => {
@@ -122,14 +131,41 @@ export default {
             localStorage.setItem('uquuu_comments_name', this.name);
             localStorage.setItem('uquuu_comments_email', this.email);
 
-            if (this.id === 0) return;
             if (!this.name || !this.comment) return this.message('昵称和评论必填哦😋');
 
+            // 新增坐标点
+            if (this.point.id === 0) {
+                const comments = new AV.Object('Comments');
+
+                comments.set('type', 'point');
+                comments.set('path', this.path);
+                comments.set('origin', this.origin);
+
+                let [x, y] = this.point.point;
+                if (this.origin === 'center') {
+                    x -= window.innerWidth / 2;
+                }
+
+                comments.set('points', `${x},${y}`);
+                comments.set('ua', window.navigator.userAgent);
+                comments.set('screen', `${window.screen.width},${window.screen.height}`);
+
+                comments.save().then((comment) => {
+                    this.$emit('change', this.pointsIndex, { id: comment.id });
+                    this.saveComment(comment.id);
+                }).catch((error) => {
+                    console.error(error);
+                });
+            } else {
+                this.saveComment(this.point.id);
+            }
+        },
+        saveComment(id) {
             // 保存评论数据
             const comments = new AV.Object('Comments');
 
             comments.set('type', 'comment');
-            comments.set('parent_id', this.id);
+            comments.set('parent_id', id);
             comments.set('name', this.name);
             comments.set('email', this.email);
             comments.set('comment', this.comment);
