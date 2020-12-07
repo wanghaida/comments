@@ -2,7 +2,7 @@
   "name": "@uquuu/comments",
   "version": "0.1.1",
   "description": "双击评论",
-  "main": "src/index.js",
+  "main": "dist/comments.umd.min.js",
   "files": [
     "src",
     "dist/*.js"
