@@ -1,11 +1,11 @@
 <template>
     <div class="comments-wrap" style="user-select: none;">
         <Comment
-            v-show="commentShow"
             ref="comment"
+            v-show="commentShow"
+            :style="commentStyle"
             :path="pointPath"
             :origin="origin"
-            :style="commentStyle"
             :points="points"
             :pointsIndex="pointsIndex"
             @mouseenter="mouseenterComment"
@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import AV from 'leancloud-storage';
 import Comment from './Comment.vue';
 import Point from './Point.vue';
 
@@ -61,14 +60,9 @@ export default {
             points: [],
             pointsIndex: -1,
             // 评论框数据
-            commentId: 0,
             commentShow: false,
-            commentColor: '',
             commentStyle: {},
         };
-    },
-    mounted() {
-        if (this.api !== '' || this.appId !== '' && this.appKey !== '') this.init();
     },
     methods: {
         // 初始化
@@ -215,7 +209,7 @@ export default {
         pointPath() {
             let path = this.path;
 
-            if (this.path.includes('location.path')) {
+            if (this.path.includes('location.pathname')) {
                 path = window.location.pathname;
             }
             if (this.path.includes('location.href')) {
