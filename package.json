@@ -1,6 +1,6 @@
 {
   "name": "@uquuu/comments",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "双击评论",
   "main": "dist/comments.umd.min.js",
   "files": [
