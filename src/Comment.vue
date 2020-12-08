@@ -4,8 +4,8 @@
             <li v-for="(val, key) in comments" :key="key">
                 <div class="comment">
                     <div class="comment-author">
-                        <span class="avatar">
-                            <img src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" alt="">
+                        <span class="avatar" v-if="opts.gravatar !== false">
+                            <img :src="avatar(val.email)" alt="">
                         </span>
                         <span class="name" :title="val.name">
                             {{ val.name }}
@@ -41,6 +41,7 @@
 </template>
 
 <script>
+import md5 from 'md5';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import 'dayjs/locale/zh-cn';
@@ -49,7 +50,7 @@ dayjs.extend(relativeTime);
 dayjs.locale('zh-cn');
 
 export default {
-    props: ['path', 'origin', 'points', 'pointsIndex'],
+    props: ['opts', 'path'],
     data() {
         return {
             tips: '',
@@ -61,17 +62,20 @@ export default {
     },
     computed: {
         point() {
-            return this.points[this.pointsIndex] || {
+            return this.opts.points[this.opts.pointsIndex] || {
                 id: 0,
                 color: '',
                 point: [0, 0],
             };
         },
+        avatar() {
+            return (avatar) => `${this.opts.gravatarCDN}/avatar/${md5(avatar)}?d=${this.opts.gravatar}`;
+        },
         time() {
             return (time) => dayjs().from((time));
         },
         rgba() {
-            return this.point.color.replace(/rgb\((.+)\)/, 'rgba($1, .65)');
+            return this.opts.pointsColor.replace(/rgb\((.+)\)/, 'rgba($1, .65)');
         },
         backgroundColor() {
             return {
@@ -89,14 +93,14 @@ export default {
             };
         },
         box() {
-            const color = this.point.color.replace(/rgb\((.+)\)/, '$1');
+            const color = this.opts.pointsColor.replace(/rgb\((.+)\)/, '$1');
             return {
                 boxShadow: `0 1px 2px -2px rgba(${color}, .16), 0 3px 6px 0 rgba(${color}, .12), 0 5px 12px 4px rgba(${color}, .09)`,
             };
         },
     },
     watch: {
-        pointsIndex: 'init',
+        'opts.pointsIndex': 'init',
     },
     methods: {
         init() {
@@ -139,10 +143,10 @@ export default {
 
                 comments.set('type', 'point');
                 comments.set('path', this.path());
-                comments.set('origin', this.origin);
+                comments.set('origin', this.opts.origin);
 
                 let [x, y] = this.point.point;
-                if (this.origin === 'center') {
+                if (this.opts.origin === 'center') {
                     x -= window.innerWidth / 2;
                 }
 
@@ -151,7 +155,7 @@ export default {
                 comments.set('screen', `${window.screen.width},${window.screen.height}`);
 
                 comments.save().then((comment) => {
-                    this.$emit('change', this.pointsIndex, { id: comment.id });
+                    this.$emit('change', this.opts.pointsIndex, { id: comment.id });
                     this.saveComment(comment.id);
                 }).catch((error) => {
                     console.error(error);

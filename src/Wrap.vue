@@ -4,10 +4,8 @@
             ref="comment"
             v-show="commentShow"
             :style="commentStyle"
+            :opts="$data"
             :path="pointPath"
-            :origin="origin"
-            :points="points"
-            :pointsIndex="pointsIndex"
             @mouseenter="mouseenterComment"
             @mouseleave="mouseleaveComment"
             @click.stop
@@ -37,6 +35,9 @@ export default {
     components: { Comment, Point },
     data() {
         return {
+            /**
+             * 参数 begin
+             */
             // API
             api: '',
             // LeanCloud
@@ -55,13 +56,21 @@ export default {
             zIndex: 999,
             // 评论框关闭延时，单位：秒
             delay: 0.1,
-            delayTimer: null,
+            // 头像
+            gravatar: 'mp',
+            gravatarCDN: 'https://www.gravatar.com',
+            /**
+             * 参数 end
+             */
             // 坐标点数组
             points: [],
             pointsIndex: -1,
+            pointsColor: '',
             // 评论框数据
             commentShow: false,
             commentStyle: {},
+            // 定时器
+            delayTimer: null,
         };
     },
     methods: {
@@ -84,6 +93,7 @@ export default {
         // 查询坐标点
         query() {
             this.points = [];
+            this.pointsIndex = -1;
 
             const query = new AV.Query('Comments');
 
@@ -139,6 +149,7 @@ export default {
 
             // 参数设置
             this.pointsIndex = point.dataset.index;
+            this.pointsColor = point.style.background;
             // 位置判定
             if ((left + width) < (w - 20) && (top + height) < h) {
                 // 判定右下

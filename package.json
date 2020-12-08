@@ -17,6 +17,7 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "dayjs": "^1.9.6",
+    "md5": "^2.3.0",
     "vue-demi": "^0.4.5"
   },
   "devDependencies": {
