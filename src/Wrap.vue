@@ -15,6 +15,7 @@
         <Point
             v-for="(val, key) in points"
             :data-index="key"
+            :style="{ zIndex }"
             :key="key"
             :point="val.point"
             :pointSize="pointSize"
@@ -76,8 +77,6 @@ export default {
     methods: {
         // 初始化
         init() {
-            if (this.api !== '') return console.error('暂不支持接口地址');
-
             AV.init({
                 appId: this.appId,
                 appKey: this.appKey,
@@ -151,49 +150,38 @@ export default {
             this.pointsIndex = point.dataset.index;
             this.pointsColor = point.style.background;
             // 位置判定
+            let nTop = 0;
+            let nLeft = 0;
             if ((left + width) < (w - 20) && (top + height) < h) {
                 // 判定右下
-                this.commentStyle = {
-                    top: `${pTop}px`,
-                    left: `${pLeft + 20}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop;
+                nLeft = pLeft + 20;
             } else if ((left - width) > (0 + 20) && (top + height) < h) {
                 // 判定左下
-                this.commentStyle = {
-                    top: `${pTop}px`,
-                    left: `${pLeft - width - 20}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop;
+                nLeft = pLeft - width - 20;
             } else if ((left + width) < (w - 20) && (top - height) > 0) {
                 // 判定右上
-                this.commentStyle = {
-                    top: `${pTop - height}px`,
-                    left: `${pLeft + 20}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop - height;
+                nLeft = pLeft + 20;
             } else if ((left - width) > (0 + 20) && (top - height) > 0) {
                 // 判定左上
-                this.commentStyle = {
-                    top: `${pTop - height}px`,
-                    left: `${pLeft - width - 20}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop - height;
+                nLeft = pLeft - width - 20;
             } else if (left * 2 < w) {
                 // 判断左侧空白较大，用左下
-                this.commentStyle = {
-                    top: `${pTop}px`,
-                    left: `${pLeft - width}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop;
+                nLeft = pLeft - width;
             } else {
                 // 判断右侧空白较大，用右下
-                this.commentStyle = {
-                    top: `${pTop}px`,
-                    left: `${pLeft}px`,
-                    zIndex: this.zIndex + 1,
-                };
+                nTop = pTop;
+                nLeft = pLeft;
             }
+            this.commentStyle = {
+                top: `${nTop}px`,
+                left: `${nLeft}px`,
+                zIndex: this.zIndex + 1,
+            };
         },
         // 移出坐标点
         mouseleave() {
