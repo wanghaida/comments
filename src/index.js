@@ -15,7 +15,7 @@ class Comments {
         }
 
         // 缺少必要参数
-        if (opts.appId === '' || opts.appKey === '') return console.error('缺少必要参数');
+        if (!opts.appId || !opts.appKey) return console.error('缺少必要参数');
 
         this.opts = opts;
 
