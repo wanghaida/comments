@@ -12,6 +12,7 @@ module.exports = {
     // 扩展 webbpack 配置，使 import 可以解构
     configureWebpack: {
         output: {
+            library: 'Comments',
             libraryExport: 'default',
         },
     },

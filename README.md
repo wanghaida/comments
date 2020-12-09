@@ -1,40 +1,48 @@
-# 双击评论
+# Comments
 
-## 安装
+## Usage
+
+Install:
 
 ```bash
 npm install @uquuu/comments
-```
-
-```bash
+# OR
 yarn add @uquuu/comments
 ```
 
-## 文档
+Import:
 
-[中文]() | [English]()
+```js
+import Comments from '@uquuu/comments';
 
-## 流程图
+new Comments({
+    appId: '',
+    appKey: '',
+});
+```
 
-![](http://assets.processon.com/chart_image/5fc5bf5a7d9c082f44848884.png)
+Import in Vue:
 
-## 数据库
+```js
+import Comments from '@uquuu/comments';
 
-这里简单的设计了一张数据表，可以作为后台设计参考。
+router.afterEach(() => {
+    new Comments({
+        appId: '',
+        appKey: '',
+    });
+});
+```
 
-| 字段名 | 类型 | 长度 | 必填 | 其他 | 说明 |
-|:---|:---|:---|:---|:---|:---|
-| id | varchar | 255 | 是 | 主键、唯一 |  |
-| type | varchar | 255 | 是 |  | 类型，`point` `comment` |
-| path | varchar | 1000 |  |  | 网页路径 |
-| origin | varchar | 255 |  |  | 坐标点原点 |
-| points | varchar | 255 |  |  | 坐标点，英文逗号分隔 |
-| parent_id | varchar | 255 |  |  | 父 ID |
-| name | varchar | 255 |  |  | 昵称 |
-| email | varchar | 1000 |  |  | 邮箱 |
-| comment | longtext |  |  |  | 评论内容 |
-| ip | varchar | 255 |  |  | IP |
-| ua | varchar | 255 |  |  | UA |
-| screen | varchar | 255 |  |  | 屏幕尺寸 |
-| created_at | timestamp |  |  |  | 创建时间 |
-| updated_at | timestamp |  |  |  | 更新时间 |
+Documents:
+
+[中文](https://comments.docs.uquuu.com)
+
+## Features
+
+- Colors
+- Serverless
+
+## License
+
+MIT License @ 2020 [Haaid Wang](https://github.com/wanghaida)
