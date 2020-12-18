@@ -11,7 +11,7 @@
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name comments ./src/index.js",
     "lint": "vue-cli-service lint",
-    "pub": "npm run build && npm run build-vue && npm publish --access public"
+    "pub": "npm run build && npm publish --access public"
   },
   "dependencies": {
     "dayjs": "^1.9.6",
