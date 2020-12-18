@@ -1,0 +1,204 @@
+.uquuu-comments * {
+    font-size: 14px;
+    line-height: 22px;
+    vertical-align: top;
+    box-sizing: border-box;
+    outline: none;
+    resize: none;
+}
+.uquuu-comments ul,
+.uquuu-comments li {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* 滚动条 */
+.uquuu-comments:hover ::-webkit-scrollbar {
+    display: block;
+}
+.uquuu-comments ::-webkit-scrollbar {
+    display: none;
+    width: 6px;
+    height: 6px;
+    background: transparent;
+}
+.uquuu-comments ::-webkit-scrollbar-track {
+    background: transparent;
+    border-radius: 10px;
+}
+.uquuu-comments ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.4);
+    border-radius: 10px;
+}
+.uquuu-comments ::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+/* 评论框 */
+.uq-c-comment {
+    position: absolute;
+    top: 100px;
+    left: 300px;
+    width: 300px;
+    height: 400px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 2px -2px rgba(24, 144, 255, .16), 0 3px 6px 0 rgba(24, 144, 255, .12), 0 5px 12px 4px rgba(24, 144, 255, .09);
+    user-select: text;
+}
+.uq-c-comment ul {
+    height: 244px;
+    overflow: overlay;
+}
+.uq-c-comment ul li {
+    padding: 0 0 8px;
+}
+.uq-c-comment ul li.nodata {
+    color: rgba(0, 0, 0, .85);
+    text-align: center;
+}
+.uq-c-comment ul li.nodata img {
+    display: block;
+    margin: 10px auto;
+}
+
+.uq-c-comment-author {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    margin-bottom: 4px;
+}
+.uq-c-comment-author .avatar,
+.uq-c-comment-author .name,
+.uq-c-comment-author .time {
+    padding-right: 8px;
+}
+.uq-c-comment-author .avatar img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+}
+.uq-c-comment-author .name {
+    max-width: 120px;
+    color: rgba(0, 0, 0, .45);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.uq-c-comment-author .time {
+    color: #ccc;
+    font-size: 12px;
+}
+
+.uq-c-comment-detail {
+    color: rgba(0, 0, 0, .85);
+}
+.uq-c-comment-detail p {
+    margin: 0;
+}
+
+.uq-c-comment-publish {
+    margin-top: 16px;
+    border: 1px solid #1890ff;
+    border-radius: 4px;
+    overflow: hidden;
+}
+.uq-c-comment-publish * {
+    font-size: 12px;
+    line-height: 20px;
+}
+
+.uq-c-comment-publish .header input {
+    padding: 4px;
+    color: rgba(0, 0, 0, .85);
+    background: transparent;
+    border: none;
+}
+.uq-c-comment-publish .header input:nth-child(1) {
+    width: 40%;
+}
+.uq-c-comment-publish .header input:nth-child(2) {
+    width: 60%;
+}
+
+.uq-c-comment-publish .editor {
+    padding: 4px;
+    border-top: 1px dashed #1890ff;
+}
+.uq-c-comment-publish .editor textarea {
+    width: 100%;
+    height: 40px;
+    padding: 0;
+    color: rgba(0, 0, 0, .85);
+    background: transparent;
+    border: none;
+}
+
+.uq-c-comment-publish .footer {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px dashed #1890ff;
+}
+.uq-c-comment-publish .footer .tips,
+.uq-c-comment-publish .footer .submit {
+    padding: 4px;
+    color: #1890ff;
+}
+.uq-c-comment-publish .footer .tips {
+    color: #ff7875;
+}
+.uq-c-comment-publish .footer .submit {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+/* 坐标点 */
+.uq-c-point {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    transform: translate(-50%);
+    cursor: pointer;
+}
+.uq-c-point.large {
+    width: 10px;
+    height: 10px;
+}
+.uq-c-point.small {
+    width: 6px;
+    height: 6px;
+}
+
+.uq-c-point::before,
+.uq-c-point::after {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: block;
+    border: 1px solid;
+    border-radius: 50%;
+    pointer-events: none;
+    content: '';
+}
+.uq-c-point::before {
+    animation: point 2s ease-out infinite;
+}
+.uq-c-point::after {
+    animation: point 2s 1s ease-out infinite;
+}
+
+@keyframes point {
+    0% {
+        opacity: .25;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(3);
+    }
+}

@@ -1,6 +1,6 @@
 {
   "name": "@uquuu/comments",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "双击评论",
   "main": "dist/comments.umd.min.js",
   "files": [
@@ -10,15 +10,13 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name comments ./src/index.js",
-    "build-vue": "vue-cli-service build --inline-vue --no-clean --target lib --name comments-vue ./src/index.js",
     "lint": "vue-cli-service lint",
     "pub": "npm run build && npm run build-vue && npm publish --access public"
   },
   "dependencies": {
-    "core-js": "^3.6.5",
     "dayjs": "^1.9.6",
     "md5": "^2.3.0",
-    "vue-demi": "^0.4.5"
+    "snabbdom": "^2.1.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -26,6 +24,7 @@
     "@vue/cli-service": "~4.5.0",
     "@vue/compiler-sfc": "^3.0.0",
     "babel-eslint": "^10.1.0",
+    "core-js": "^3.6.5",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^7.0.0-0",
     "vue": "^3.0.0",
