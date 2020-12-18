@@ -90,7 +90,7 @@ class Comments {
         // 查询坐标点
         this.query();
 
-        // 监听双击事件
+        // 监听事件
         this.listen();
     }
 
@@ -121,6 +121,27 @@ class Comments {
             this.render();
         }).catch((error) => {
             console.error(error);
+        });
+    }
+
+    // 监听事件
+    listen() {
+        document.addEventListener('click', (e) => {
+            if (this.opts.close !== 'delay' && !this.commentsDom?.elm?.contains(e.target)) {
+                this.data.point = undefined;
+                this.data.pointDom = undefined;
+                this.render();
+            }
+        });
+        document.addEventListener('dblclick', (e) => {
+            const point = {
+                id: 0,
+                color: this.color(),
+                point: [e.pageX, e.pageY],
+            };
+            this.points.push(point);
+            // 渲染
+            this.render();
         });
     }
 
@@ -214,20 +235,6 @@ class Comments {
         setTimeout(() => {
             oTips.innerText = '';
         }, 3000);
-    }
-
-    // 监听双击事件
-    listen() {
-        document.addEventListener('dblclick', (e) => {
-            const point = {
-                id: 0,
-                color: this.color(),
-                point: [e.pageX, e.pageY],
-            };
-            this.points.push(point);
-            // 渲染
-            this.render();
-        });
     }
 
     // Path 计算
@@ -462,6 +469,8 @@ class Comments {
 
     // 移入坐标点
     mouseenterPoint({ target: dom }) {
+        if (this.data.pointDom === dom) return;
+
         // 屏幕信息
         const w = window.innerWidth;
         const h = window.innerHeight;
@@ -541,6 +550,8 @@ class Comments {
 
     // 移出坐标点
     mouseleavePoint() {
+        if (this.opts.close !== 'delay') return;
+
         clearTimeout(this.data.timer);
         this.data.timer = setTimeout(() => {
             this.data.point = undefined;
