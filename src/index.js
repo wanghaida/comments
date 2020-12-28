@@ -44,18 +44,18 @@ class Comments {
         }, opts);
         // 数据
         this.data = {
-            point: undefined,
-            pointDom: undefined,
+            point: null,
+            pointDom: null,
             style: {},
             timer: null,
         };
 
         // 评论列表
         this.comments = [];
-        this.commentsDom = undefined;
+        this.commentsDom = null;
         // 坐标点列表
         this.points = [];
-        this.pointsDom = undefined;
+        this.pointsDom = null;
 
         // 创建挂载点
         this.dom = document.createElement('div');
@@ -77,11 +77,12 @@ class Comments {
         });
 
         instance = this;
+        return instance;
     }
 
     // 初始化
     init() {
-        AV.init({
+        window.AV.init({
             appId: this.opts.appId,
             appKey: this.opts.appKey,
             serverURL: this.opts.appUrl ? this.opts.appUrl : `https://${this.opts.appId.substr(0, 8)}.lc-cn-n1-shared.com`,
@@ -96,7 +97,7 @@ class Comments {
 
     // 查询坐标点
     query() {
-        const query = new AV.Query('Comments');
+        const query = new window.AV.Query('Comments');
 
         query.equalTo('type', 'point');
         query.equalTo('path', this.path());
@@ -128,8 +129,8 @@ class Comments {
     listen() {
         document.addEventListener('click', (e) => {
             if (this.opts.close !== 'delay' && !this.commentsDom?.elm?.contains(e.target)) {
-                this.data.point = undefined;
-                this.data.pointDom = undefined;
+                this.data.point = null;
+                this.data.pointDom = null;
                 this.render();
             }
         });
@@ -164,7 +165,7 @@ class Comments {
 
         // 新增坐标点
         if (this.data.point.id === 0) {
-            const comments = new AV.Object('Comments');
+            const comments = new window.AV.Object('Comments');
 
             comments.set('type', 'point');
             comments.set('path', this.path());
@@ -202,7 +203,7 @@ class Comments {
     // 保存评论
     saveComment({ id, name, email, oComment }) {
         // 保存评论数据
-        const comments = new AV.Object('Comments');
+        const comments = new window.AV.Object('Comments');
 
         comments.set('type', 'comment');
         comments.set('parent_id', id);
@@ -283,7 +284,7 @@ class Comments {
 
     // Random 计算
     random(array) {
-        return Array.isArray(array) ? array[array.length * Math.random() << 0] : array;
+        return Array.isArray(array) ? array[Math.floor(array.length * Math.random())] : array;
     }
 
     // 渲染
@@ -526,7 +527,7 @@ class Comments {
         if (this.data.point.id === 0) return;
 
         // 生成评论数据
-        const query = new AV.Query('Comments');
+        const query = new window.AV.Query('Comments');
 
         query.equalTo('type', 'comment');
         query.equalTo('parent_id', this.data.point.id);
@@ -554,8 +555,8 @@ class Comments {
 
         clearTimeout(this.data.timer);
         this.data.timer = setTimeout(() => {
-            this.data.point = undefined;
-            this.data.pointDom = undefined;
+            this.data.point = null;
+            this.data.pointDom = null;
             this.render();
         }, this.opts.delay < 0.1 ? 100 : this.opts.delay * 1000);
     }
