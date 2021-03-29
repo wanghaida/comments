@@ -313,7 +313,7 @@ class Comments {
             const comment = this.comments[i];
             comments.push(h('li', [
                 h('div.uq-c-comment-author', [
-                    h('span.avatar', {
+                    h('span.uq-c-comment-author-avatar', {
                         style: {
                             display: this.opts.gravatar === false ? 'none' : '',
                         },
@@ -324,14 +324,14 @@ class Comments {
                             },
                         }),
                     ]),
-                    h('span.name', {
+                    h('span.uq-c-comment-author-name', {
                         props: {
                             title: comment.name,
                         },
                     }, [
                         comment.name,
                     ]),
-                    h('span.time', {
+                    h('span.uq-c-comment-author-time', {
                         props: {
                             title: comment.createdAt,
                         },
@@ -377,7 +377,7 @@ class Comments {
                     borderColor: `rgba(${color}, .65)`,
                 },
             }, [
-                h('div.header', [
+                h('div.uq-c-comment-publish-header', [
                     h('input#uquuu-comments-name', {
                         props: {
                             type: 'text',
@@ -395,7 +395,7 @@ class Comments {
                         },
                     }),
                 ]),
-                h('div.editor', {
+                h('div.uq-c-comment-publish-editor', {
                     style: {
                         borderColor: `rgba(${color}, .65)`,
                     },
@@ -406,7 +406,7 @@ class Comments {
                         }
                     }),
                 ]),
-                h('div.footer', {
+                h('div.uq-c-comment-publish-footer', {
                     style: {
                         borderColor: `rgba(${color}, .65)`,
                     },
@@ -433,7 +433,7 @@ class Comments {
 
         for (let i = 0; i < this.points.length; i++) {
             const point = this.points[i];
-            points.push(h(`div.uq-c-point.${this.opts.pointSize}`, {
+            points.push(h(`div.uq-c-point.div.uq-c-point-${this.opts.pointSize}`, {
                 dataset: {
                     index: '' + i,
                 },
