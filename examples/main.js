@@ -3,6 +3,13 @@ import { createRouter, createWebHistory } from 'vue-router';
 import Comments from '../src';
 import App from './App.vue';
 
+new Comments({
+    appId: '',
+    appKey: '',
+    gravatarCDN: 'https://gravatar.loli.net',
+    pointRange: 'large',
+});
+
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -11,13 +18,6 @@ const router = createRouter({
         { path: '/b', component: () => import('./views/B.vue') },
         { path: '/match', component: () => import('./views/Match.vue') },
     ],
-});
-
-router.afterEach(() => {
-    new Comments({
-        appId: '',
-        appKey: '',
-    });
 });
 
 createApp(App).use(router).mount('#app');

@@ -7,6 +7,7 @@ import { propsModule } from 'snabbdom/build/package/modules/props';
 import { styleModule } from 'snabbdom/build/package/modules/style';
 import { datasetModule } from 'snabbdom/build/package/modules/dataset';
 import { eventListenersModule } from 'snabbdom/build/package/modules/eventlisteners';
+import { spaRouterListener } from './utils';
 
 dayjs.extend(relativeTime);
 
@@ -32,15 +33,16 @@ class Comments {
             appId: '',
             appKey: '',
             appUrl: '',
-            path: 'window.location.pathname',
-            origin: 'center',
-            pointSize: 'default',
-            pointColor: 'random',
-            zIndex: 999,
             close: 'delay',
             delay: 0.1,
             gravatar: 'mp',
             gravatarCDN: 'https://www.gravatar.com',
+            origin: 'center',
+            path: 'window.location.pathname',
+            pointColor: 'random',
+            pointRange: 'default',
+            pointSize: 'default',
+            zIndex: 999,
         }, opts);
         // 数据
         this.data = {
@@ -120,9 +122,7 @@ class Comments {
             }
             // 渲染
             this.render();
-        }).catch((error) => {
-            console.error(error);
-        });
+        }).catch(console.error);
     }
 
     // 监听事件
@@ -144,6 +144,12 @@ class Comments {
             // 渲染
             this.render();
         });
+        // SPA
+        history.pushState = spaRouterListener('pushState');
+        window.addEventListener('popstate', () => this.query());
+        window.addEventListener('pushstate', () => this.query());
+        window.addEventListener('popState', () => this.query());
+        window.addEventListener('pushState', () => this.query());
     }
 
     // 保存坐标点
@@ -187,9 +193,7 @@ class Comments {
                     email: oEmail.value,
                     oComment,
                 });
-            }).catch((error) => {
-                console.error(error);
-            });
+            }).catch(console.error);
         } else {
             this.saveComment({
                 id: this.data.point.id,
@@ -292,11 +296,7 @@ class Comments {
         this.commentsDom = this.renderComments();
         this.pointsDom = this.renderPoints();
 
-        this.dom = this.patch(this.dom, h('div.uquuu-comments', {
-            style: {
-                userSelect: 'none',
-            },
-        }, [this.commentsDom, ...this.pointsDom]));
+        this.dom = this.patch(this.dom, h('div.uq-comments', [this.commentsDom, ...this.pointsDom]));
     }
 
     // 渲染 评论列表
@@ -312,8 +312,8 @@ class Comments {
         for (let i = 0; i < this.comments.length; i++) {
             const comment = this.comments[i];
             comments.push(h('li', [
-                h('div.uq-c-comment-author', [
-                    h('span.uq-c-comment-author-avatar', {
+                h('div.uq-comment-author', [
+                    h('span.uq-comment-author-avatar', {
                         style: {
                             display: this.opts.gravatar === false ? 'none' : '',
                         },
@@ -324,14 +324,14 @@ class Comments {
                             },
                         }),
                     ]),
-                    h('span.uq-c-comment-author-name', {
+                    h('span.uq-comment-author-name', {
                         props: {
                             title: comment.name,
                         },
                     }, [
                         comment.name,
                     ]),
-                    h('span.uq-c-comment-author-time', {
+                    h('span.uq-comment-author-time', {
                         props: {
                             title: comment.createdAt,
                         },
@@ -339,7 +339,7 @@ class Comments {
                         dayjs().to(comment.createdAt),
                     ]),
                 ]),
-                h('div.uq-c-comment-detail', [
+                h('div.uq-comment-detail', [
                     h('p', [
                         comment.comment,
                     ]),
@@ -358,7 +358,7 @@ class Comments {
             ]));
         }
 
-        return h('div.uq-c-comment', {
+        return h('div.uq-comment', {
             style: {
                 display: this.data.point ? 'block' : 'none',
                 boxShadow: `0 1px 2px -2px rgba(${color}, .16), 0 3px 6px 0 rgba(${color}, .12), 0 5px 12px 4px rgba(${color}, .09)`,
@@ -372,12 +372,12 @@ class Comments {
             },
         }, [
             h('ul', [...comments]),
-            h('div.uq-c-comment-publish', {
+            h('div.uq-comment-publish', {
                 style: {
                     borderColor: `rgba(${color}, .65)`,
                 },
             }, [
-                h('div.uq-c-comment-publish-header', [
+                h('div.uq-comment-publish-header', [
                     h('input#uquuu-comments-name', {
                         props: {
                             type: 'text',
@@ -395,7 +395,7 @@ class Comments {
                         },
                     }),
                 ]),
-                h('div.uq-c-comment-publish-editor', {
+                h('div.uq-comment-publish-editor', {
                     style: {
                         borderColor: `rgba(${color}, .65)`,
                     },
@@ -406,7 +406,7 @@ class Comments {
                         }
                     }),
                 ]),
-                h('div.uq-c-comment-publish-footer', {
+                h('div.uq-comment-publish-footer', {
                     style: {
                         borderColor: `rgba(${color}, .65)`,
                     },
@@ -433,7 +433,7 @@ class Comments {
 
         for (let i = 0; i < this.points.length; i++) {
             const point = this.points[i];
-            points.push(h(`div.uq-c-point.div.uq-c-point-${this.opts.pointSize}`, {
+            points.push(h(`div.uq-point.uq-point-${this.opts.pointSize}.uq-point-range-${this.opts.pointRange}`, {
                 dataset: {
                     index: '' + i,
                 },
@@ -446,6 +446,7 @@ class Comments {
                 },
                 on: {
                     dblclick: (e) => e.stopPropagation(),
+                    mousemove: (e) => this.mouseenterPoint(e),
                     mouseenter: (e) => this.mouseenterPoint(e),
                     mouseleave: (e) => this.mouseleavePoint(e),
                 },
@@ -544,9 +545,7 @@ class Comments {
             }
             // 渲染
             this.render();
-        }).catch((error) => {
-            console.error(error);
-        });
+        }).catch(console.error);
     }
 
     // 移出坐标点
